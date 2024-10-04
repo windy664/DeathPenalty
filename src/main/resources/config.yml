@@ -1,0 +1,11 @@
+# 每次玩家死亡后减少的生命值上限
+health-decrease-per-death: 2.0
+
+# 每次玩家吃金苹果后恢复的生命值上限
+health-restore-per-golden-apple: 10.0
+#生命最高上限
+health-max: 40.0
+# 调试模式
+debug: false
+#插件前缀
+prefix: "§7§l[§c§l死亡惩罚§7§l]"
