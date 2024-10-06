@@ -8,4 +8,6 @@ health-max: 40.0
 # 调试模式
 debug: false
 #插件前缀
-prefix: "§7§l[§c§l死亡惩罚§7§l]"
+prefix: "§7§l[§c§l死亡惩罚§7§l] "
+#mohist兼容模式
+mohist: true
