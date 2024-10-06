@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +29,7 @@ public class DeathPenalty extends JavaPlugin implements Listener {
     private Logger logger;
     private String prefix;
     private Double healthmax;
+    private boolean respawn;
     @Override
     public void onEnable() {
         // 加载配置文件
@@ -36,6 +38,7 @@ public class DeathPenalty extends JavaPlugin implements Listener {
         logger = getLogger();
         prefix = config.getString("prefix", "§b[§b死亡惩罚§b]§f");
         healthmax = config.getDouble("health-max", 40.0);
+        respawn = config.getBoolean("mohist", false);
 
         // 加载玩家数据文件
         loadPlayerData();
@@ -101,6 +104,27 @@ public class DeathPenalty extends JavaPlugin implements Listener {
 
         logger("玩家 " + player.getName() + " 死了，新的生命 " + newMaxHealth);
 
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if(!respawn){
+            logger("非mohist模式，不处理兼容");
+            return;
+        }
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
+
+        // 从 data.yml 文件中获取玩家的生命值上限
+        double maxHealth = playerData.getDouble("players." + playerId + ".max-health", healthmax);
+
+
+        // 延迟几秒后设置生命值上限
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            // 设置玩家的生命值上限
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
+            logger(player.getName() + " 重生，新的生命 " + maxHealth);
+        }, 40L); // 延迟2秒 (20 ticks = 1 second)
     }
 
     @EventHandler
